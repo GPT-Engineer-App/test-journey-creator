@@ -3,21 +3,29 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Cat, Heart, Info, Paw, Star, ArrowRight } from "lucide-react";
+import { Cat, Heart, Info, Paw, Star, ArrowRight, Gift, Camera } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const catImages = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg",
   "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/1200px-Cat_November_2010-1a.jpg",
   "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Kittyply_edit1.jpg/1200px-Kittyply_edit1.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Sleeping_cat_on_her_back.jpg/1200px-Sleeping_cat_on_her_back.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Cats_eyes_2007-2.jpg/1200px-Cats_eyes_2007-2.jpg",
 ];
 
 const Index = () => {
   const [likes, setLikes] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [adoptionProgress, setAdoptionProgress] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,6 +38,22 @@ const Index = () => {
     const timer = setTimeout(() => setAdoptionProgress(66), 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (email) {
+      toast.success("Thanks for subscribing! Meow-velous choice!");
+      setEmail("");
+    } else {
+      toast.error("Please enter a valid email address.");
+    }
+  };
+
+  const handleLike = () => {
+    setLikes(likes + 1);
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3000);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-100 to-pink-100">
@@ -45,7 +69,7 @@ const Index = () => {
           animate={{ backgroundPosition: "100% 100%" }}
           transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
           style={{
-            backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.4\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+            backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.4\"%3E%3Cpath d=\"M30 30c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-10c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0 20c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
           }}
         />
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -79,6 +103,26 @@ const Index = () => {
       </motion.div>
       
       <div className="max-w-4xl mx-auto p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mb-8"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Gift className="mr-2 h-5 w-5 text-purple-500" />
+                Daily Cat Fact
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg italic">
+                "Cats have over 20 vocalizations, including the purr, meow, chirp, and trill."
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -240,7 +284,7 @@ const Index = () => {
           <Button 
             variant="outline" 
             size="lg" 
-            onClick={() => setLikes(likes + 1)}
+            onClick={handleLike}
             className="group relative overflow-hidden"
           >
             <span className="relative z-10 flex items-center">
@@ -252,6 +296,18 @@ const Index = () => {
         </motion.div>
       </div>
       
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50">
+          <lottie-player
+            src="https://assets2.lottiefiles.com/packages/lf20_u4yrau.json"
+            background="transparent"
+            speed="1"
+            style={{ width: '100%', height: '100%' }}
+            autoplay
+          ></lottie-player>
+        </div>
+      )}
+
       <motion.footer 
         className="bg-purple-600 text-white py-8 mt-12"
         initial={{ opacity: 0 }}
@@ -260,7 +316,7 @@ const Index = () => {
       >
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-lg mb-4">© 2023 Cat Lovers United. All rights reserved.</p>
-          <div className="flex justify-center space-x-6">
+          <div className="flex justify-center space-x-6 mb-8">
             {[
               { Icon: Heart, label: "Love" },
               { Icon: Star, label: "Favorite" },
@@ -279,8 +335,42 @@ const Index = () => {
               </motion.div>
             ))}
           </div>
+          <form onSubmit={handleSubscribe} className="flex flex-col items-center space-y-4">
+            <Label htmlFor="email" className="text-lg">Subscribe to our Meow-sletter</Label>
+            <div className="flex w-full max-w-sm items-center space-x-2">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-white text-purple-900"
+              />
+              <Button type="submit" variant="secondary">Subscribe</Button>
+            </div>
+          </form>
         </div>
       </motion.footer>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="fixed bottom-4 right-4 rounded-full p-3 bg-purple-600 hover:bg-purple-700 transition-colors">
+            <Camera className="h-6 w-6 text-white" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share Your Cat Photo</DialogTitle>
+            <DialogDescription>
+              Upload a photo of your feline friend to our gallery!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="picture">Picture</Label>
+            <Input id="picture" type="file" />
+          </div>
+          <Button type="submit" onClick={() => toast.success("Photo uploaded successfully!")}>Upload</Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
